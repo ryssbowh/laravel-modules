@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use PackageVersions\Versions;
 
 abstract class Module
 {
@@ -446,5 +447,22 @@ abstract class Module
     private function loadTranslationsFrom(string $path, string $namespace): void
     {
         $this->translator->addNamespace($namespace, $path);
+    }
+
+    /**
+     * Get this module composer version
+     * @return string
+     */
+    public function getVersion()
+    {
+        $name = $this->getComposerAttr('name');
+        try{
+            $version = Versions::getversion($name);
+        }
+        catch(\Exception $e){
+            return '';
+        }
+        $version = explode('@', $version);
+        return $version[0];
     }
 }
