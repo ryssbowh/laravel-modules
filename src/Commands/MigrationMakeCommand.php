@@ -11,9 +11,11 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrationMakeCommand extends GeneratorCommand
+class MigrationMakeCommand extends MigrationGeneratorCommand
 {
     use ModuleCommandTrait;
+
+    protected $argumentName = 'name';
 
     /**
      * The console command name.
@@ -73,12 +75,14 @@ class MigrationMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $parser = new NameParser($this->argument('name'));
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         if ($parser->isCreate()) {
             return Stub::create('/migration/create.stub', [
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
+                'namespace' => $this->getClassNamespace($module)
             ]);
         } elseif ($parser->isAdd()) {
             return Stub::create('/migration/add.stub', [
@@ -86,6 +90,7 @@ class MigrationMakeCommand extends GeneratorCommand
                 'table' => $parser->getTableName(),
                 'fields_up' => $this->getSchemaParser()->up(),
                 'fields_down' => $this->getSchemaParser()->down(),
+                'namespace' => $this->getClassNamespace($module)
             ]);
         } elseif ($parser->isDelete()) {
             return Stub::create('/migration/delete.stub', [
@@ -93,17 +98,20 @@ class MigrationMakeCommand extends GeneratorCommand
                 'table' => $parser->getTableName(),
                 'fields_down' => $this->getSchemaParser()->up(),
                 'fields_up' => $this->getSchemaParser()->down(),
+                'namespace' => $this->getClassNamespace($module)
             ]);
         } elseif ($parser->isDrop()) {
             return Stub::create('/migration/drop.stub', [
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
+                'namespace' => $this->getClassNamespace($module)
             ]);
         }
 
         return Stub::create('/migration/plain.stub', [
             'class' => $this->getClass(),
+            'namespace' => $this->getClassNamespace($module)
         ]);
     }
 
@@ -116,15 +124,7 @@ class MigrationMakeCommand extends GeneratorCommand
 
         $generatorPath = GenerateConfigReader::read('migration');
 
-        return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
-    }
-
-    /**
-     * @return string
-     */
-    private function getFileName()
-    {
-        return date('Y_m_d_His_') . $this->getSchemaName();
+        return $path . $generatorPath->getPath() . '/' . $this->getFileName();
     }
 
     /**
@@ -158,5 +158,10 @@ class MigrationMakeCommand extends GeneratorCommand
         if (app()->environment() === 'testing') {
             return;
         }
+    }
+
+    public function getDefaultNamespace()
+    {
+        return $this->laravel['modules']->config('paths.generator.migrations.path', 'Database/Migrations');
     }
 }

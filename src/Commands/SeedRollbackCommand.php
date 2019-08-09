@@ -13,7 +13,7 @@ use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class SeedCommand extends Command
+class SeedRollbackCommand extends Command
 {
     use ModuleCommandTrait;
 
@@ -22,14 +22,14 @@ class SeedCommand extends Command
      *
      * @var string
      */
-    protected $name = 'module:seed';
+    protected $name = 'module:seed-rollback';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run database seeder from the specified module or from all modules.';
+    protected $description = 'Rollback database seeder from the specified module or from all modules.';
 
     /**
      * Execute the console command.
@@ -98,7 +98,7 @@ class SeedCommand extends Command
 
         if (file_exists($path)) {
             $this->dbSeed($path);
-            $this->info("Module [$name] seeded.");
+            $this->info("Module [$name] seeding rolled back.");
         }
     }
 
@@ -122,7 +122,8 @@ class SeedCommand extends Command
         if ($option = $this->option('force')) {
             $params['--force'] = $option;
         }
-        $this->call('db:seed', $params);
+
+        $this->call('db:seed-rollback', $params);
     }
 
     /**

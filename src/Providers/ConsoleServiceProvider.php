@@ -37,6 +37,7 @@ use Nwidart\Modules\Commands\RouteProviderMakeCommand;
 use Nwidart\Modules\Commands\RuleMakeCommand;
 use Nwidart\Modules\Commands\SeedCommand;
 use Nwidart\Modules\Commands\SeedMakeCommand;
+use Nwidart\Modules\Commands\SeedRollbackCommand;
 use Nwidart\Modules\Commands\SetupCommand;
 use Nwidart\Modules\Commands\TestMakeCommand;
 use Nwidart\Modules\Commands\UnUseCommand;
@@ -83,6 +84,7 @@ class ConsoleServiceProvider extends ServiceProvider
         PublishMigrationCommand::class,
         PublishTranslationCommand::class,
         SeedCommand::class,
+        SeedRollbackCommand::class,
         SeedMakeCommand::class,
         SetupCommand::class,
         UnUseCommand::class,

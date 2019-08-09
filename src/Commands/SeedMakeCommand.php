@@ -10,7 +10,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class SeedMakeCommand extends GeneratorCommand
+class SeedMakeCommand extends MigrationGeneratorCommand
 {
     use ModuleCommandTrait, CanClearModulesCache;
 
@@ -29,6 +29,8 @@ class SeedMakeCommand extends GeneratorCommand
      * @var string
      */
     protected $description = 'Generate new seeder for the specified module.';
+
+    private $classname;
 
     /**
      * Get the console command arguments.
@@ -68,11 +70,33 @@ class SeedMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/seeder.stub', [
-            'NAME' => $this->getSeederName(),
+            'NAME' => $this->getClass(),
             'MODULE' => $this->getModuleName(),
-            'NAMESPACE' => $this->getClassNamespace($module),
-
+            'NAMESPACE' => $this->getClassNamespace($module)
         ]))->render();
+    }
+
+    /**
+     * Get file name.
+     *
+     * @return string
+     */
+    protected function getFileName()
+    {
+        return $this->getClass().'.php';
+    }
+
+    /**
+     * Get class name.
+     *
+     * @return string
+     */
+    public function getClass()
+    {
+        if(!$this->classname){
+            $this->classname = 'S'.(new \DateTime)->format('Y_m_d_Hisu').'_'.Str::studly($this->argument('name'));
+        }
+        return $this->classname;
     }
 
     /**
@@ -86,27 +110,12 @@ class SeedMakeCommand extends GeneratorCommand
 
         $seederPath = GenerateConfigReader::read('seeder');
 
-        return $path . $seederPath->getPath() . '/' . $this->getSeederName() . '.php';
+        $now = new \DateTime();
+
+        return $path . $seederPath->getPath() . '/' . $this->getFileName();
     }
 
-    /**
-     * Get seeder name.
-     *
-     * @return string
-     */
-    private function getSeederName()
-    {
-        $end = $this->option('master') ? 'DatabaseSeeder' : 'TableSeeder';
-
-        return Str::studly($this->argument('name')) . $end;
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace()
     {
         return $this->laravel['modules']->config('paths.generator.seeder.path', 'Database/Seeders');
     }
