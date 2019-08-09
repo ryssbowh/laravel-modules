@@ -198,9 +198,7 @@ class Migrator
      */
     public function resolve($file)
     {
-        $file = implode('_', array_slice(explode('_', $file), 4));
-
-        $class = Str::studly($file);
+        $class = str_replace('.php', '', $file);
 
         return new $class();
     }

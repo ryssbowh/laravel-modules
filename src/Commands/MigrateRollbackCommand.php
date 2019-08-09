@@ -72,17 +72,25 @@ class MigrateRollbackCommand extends Command
             $migrator->setDatabase($database);
         }
 
+        if ($this->option('unseed')) {
+            $this->call('module:seed-rollback', [
+                'module' => $module->getName(),
+                '--database' => $this->option('database'),
+                '--pretend' => $this->option('pretend'),
+                '--force' => $this->option('force')
+            ]);
+        }
+
         $migrated = $migrator->rollback();
 
         if (count($migrated)) {
             foreach ($migrated as $migration) {
                 $this->line("Rollback: <info>{$migration}</info>");
             }
-
-            return;
         }
-
-        $this->comment('Nothing to rollback.');
+        else{
+            $this->comment('Nothing to rollback.');
+        }
     }
 
     /**
@@ -108,7 +116,8 @@ class MigrateRollbackCommand extends Command
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'],
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
-            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['unseed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be rolled back.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dumps the queries that would be executed.'],
         ];
     }
 }

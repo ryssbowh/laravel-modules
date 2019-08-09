@@ -46,7 +46,11 @@ class MigrateCommand extends Command
             return $this->migrate($module);
         }
 
-        foreach ($this->module->getOrdered($this->option('direction')) as $module) {
+        $modules = array_filter($this->module->getOrdered($this->option('direction')), function($module){
+            return $module->enabled();
+        });
+
+        foreach ($modules as $module) {
             $this->line('Running for module: <info>' . $module->getName() . '</info>');
 
             $this->migrate($module);
@@ -74,7 +78,12 @@ class MigrateCommand extends Command
         ]);
 
         if ($this->option('seed')) {
-            $this->call('module:seed', ['module' => $module->getName()]);
+            $this->call('module:seed', [
+                'module' => $module->getName(),
+                '--database' => $this->option('database'),
+                '--pretend' => $this->option('pretend'),
+                '--force' => $this->option('force'),
+            ]);
         }
     }
 

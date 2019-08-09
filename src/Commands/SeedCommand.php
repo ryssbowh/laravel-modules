@@ -42,7 +42,9 @@ class SeedCommand extends Command
                 $name = Str::studly($name);
                 $this->moduleSeed($this->getModuleByName($name));
             } else {
-                $modules = $this->getModuleRepository()->getOrdered();
+                $modules = array_filter($this->getModuleRepository()->getOrdered(), function($module){
+                    return $module->enabled();
+                });
                 array_walk($modules, [$this, 'moduleSeed']);
                 $this->info('All modules seeded.');
             }
