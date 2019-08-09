@@ -30,21 +30,6 @@ class SeedMakeCommand extends MigrationGeneratorCommand
      */
     protected $description = 'Generate new seeder for the specified module.';
 
-    private $classname;
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['name', InputArgument::REQUIRED, 'The name of seeder will be created.'],
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
-    }
-
     /**
      * Get the console command options.
      *
@@ -77,29 +62,6 @@ class SeedMakeCommand extends MigrationGeneratorCommand
     }
 
     /**
-     * Get file name.
-     *
-     * @return string
-     */
-    protected function getFileName()
-    {
-        return $this->getClass().'.php';
-    }
-
-    /**
-     * Get class name.
-     *
-     * @return string
-     */
-    public function getClass()
-    {
-        if(!$this->classname){
-            $this->classname = 'S'.(new \DateTime)->format('Y_m_d_Hisu').'_'.Str::studly($this->argument('name'));
-        }
-        return $this->classname;
-    }
-
-    /**
      * @return mixed
      */
     protected function getDestinationFilePath()
@@ -110,13 +72,45 @@ class SeedMakeCommand extends MigrationGeneratorCommand
 
         $seederPath = GenerateConfigReader::read('seeder');
 
-        $now = new \DateTime();
-
         return $path . $seederPath->getPath() . '/' . $this->getFileName();
     }
 
     public function getDefaultNamespace()
     {
         return $this->laravel['modules']->config('paths.generator.seeder.path', 'Database/Seeders');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getPrefix()
+    {
+        return 'S';
+    }
+
+    /**
+     * Get class namespace.
+     *
+     * @param \Nwidart\Modules\Module $module
+     *
+     * @return string
+     */
+    public function getClassNamespace($module)
+    {
+        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
+
+        $extra = str_replace('/', '\\', $extra);
+
+        $namespace = $this->laravel['modules']->config('namespace');
+
+        $namespace .= '\\' . $module->getStudlyName();
+
+        $namespace .= '\\' . $this->getDefaultNamespace();
+
+        $namespace .= '\\' . $extra;
+
+        $namespace = str_replace('/', '\\', $namespace);
+
+        return trim($namespace, '\\');
     }
 }

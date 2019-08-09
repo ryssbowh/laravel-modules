@@ -4,9 +4,8 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Nwidart\Modules\Exceptions\ClassAlreadyExistException;
-use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
+use Symfony\Component\Console\Input\InputArgument;
 
 abstract class MigrationGeneratorCommand extends Command
 {
@@ -32,6 +31,19 @@ abstract class MigrationGeneratorCommand extends Command
     abstract protected function getDestinationFilePath();
 
     /**
+     * Prefix for the class name
+     * @return string
+     */
+    abstract protected function getPrefix();
+
+    /**
+     * Classname being generated
+     * 
+     * @var string
+     */
+    private $classname;
+
+    /**
      * Execute the console command.
      */
     public function handle()
@@ -44,39 +56,44 @@ abstract class MigrationGeneratorCommand extends Command
 
         $contents = $this->getTemplateContents();
 
-        try {
-            (new FileGenerator($path, $contents))->generate();
+        (new FileGenerator($path, $contents))->generate();
 
-            $this->info("Created : {$path}");
-        } 
-        catch (FileAlreadyExistException $e) {
-            $this->error("File : {$path} already exists.");
-        }
+        $this->info("Created : {$path}");
     }
 
     /**
-     * Get class namespace.
-     *
-     * @param \Nwidart\Modules\Module $module
+     * Get file name.
      *
      * @return string
      */
-    public function getClassNamespace($module)
+    protected function getFileName()
     {
-        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
+        return $this->getClass().'.php';
+    }
 
-        $extra = str_replace('/', '\\', $extra);
+    /**
+     * Get class name.
+     *
+     * @return string
+     */
+    public function getClass()
+    {
+        if(!$this->classname){
+            $this->classname = $this->getPrefix().(new \DateTime)->format('Y_m_d_Hisu').'_'.Str::studly($this->argument('name'));
+        }
+        return $this->classname;
+    }
 
-        $namespace = $this->laravel['modules']->config('namespace');
-
-        $namespace .= '\\' . $module->getStudlyName();
-
-        $namespace .= '\\' . $this->getDefaultNamespace();
-
-        $namespace .= '\\' . $extra;
-
-        $namespace = str_replace('/', '\\', $namespace);
-
-        return trim($namespace, '\\');
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of class that will be created.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module that will be used.'],
+        ];
     }
 }
