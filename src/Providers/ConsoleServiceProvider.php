@@ -9,6 +9,7 @@ use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
+use Nwidart\Modules\Commands\ExceptionMakeCommand;
 use Nwidart\Modules\Commands\FactoryMakeCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\JobMakeCommand;
@@ -92,6 +93,7 @@ class ConsoleServiceProvider extends ServiceProvider
         UseCommand::class,
         ResourceMakeCommand::class,
         TestMakeCommand::class,
+        ExceptionMakeCommand::class
     ];
 
     /**
