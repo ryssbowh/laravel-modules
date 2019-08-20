@@ -34,3 +34,17 @@ if (! function_exists('public_path')) {
         return app()->make('path.public') . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 }
+
+if (! function_exists('module_url')) {
+    /**
+     * Get the url to a module public file
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function module_url(string $module, string $file)
+    {
+
+        return '/modules/'.$module.'/'.$file;
+    }
+}
