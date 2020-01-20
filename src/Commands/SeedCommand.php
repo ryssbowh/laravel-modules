@@ -98,6 +98,8 @@ class SeedCommand extends Command
         $name = $module->getName();
         $path = $module->getPath().'/'.config('modules.paths.generator.seeder.path');
 
+        $this->info("Seeding module [$name].");
+
         if (file_exists($path)) {
             $this->dbSeed($path);
             $this->info("Module [$name] seeded.");
