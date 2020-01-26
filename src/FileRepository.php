@@ -312,8 +312,12 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function getCoreModules($onlyNames = false): array
     {
-        $modules = array_filter($this->getOrdered(), function ($module) {
+        $modules = array_filter($this->all(), function ($module) {
             return $module->get('core') === 1;
+        });
+
+        usort($modules, function($module1, $module2){
+            return ($module1->get('order') > $module2->get('order')) ? 1 : 0;
         });
 
         if ($onlyNames) {
@@ -334,8 +338,12 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function getNonCoreModules($onlyNames = false): array
     {
-        $modules = array_filter($this->getOrdered(), function ($module) {
-            return $module->get('core') != 1;
+        $modules = array_filter($this->all(), function ($module) {
+            return $module->get('core') !== 1;
+        });
+
+        usort($modules, function($module1, $module2){
+            return ($module1->get('order') > $module2->get('order')) ? 1 : 0;
         });
 
         if ($onlyNames) {
