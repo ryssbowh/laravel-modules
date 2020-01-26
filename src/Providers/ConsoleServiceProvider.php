@@ -32,6 +32,7 @@ use Nwidart\Modules\Commands\PublishCommand;
 use Nwidart\Modules\Commands\PublishConfigurationCommand;
 use Nwidart\Modules\Commands\PublishMigrationCommand;
 use Nwidart\Modules\Commands\PublishTranslationCommand;
+use Nwidart\Modules\Commands\ReinstallCommand;
 use Nwidart\Modules\Commands\RequestMakeCommand;
 use Nwidart\Modules\Commands\ResourceMakeCommand;
 use Nwidart\Modules\Commands\RouteProviderMakeCommand;
@@ -93,7 +94,8 @@ class ConsoleServiceProvider extends ServiceProvider
         UseCommand::class,
         ResourceMakeCommand::class,
         TestMakeCommand::class,
-        ExceptionMakeCommand::class
+        ExceptionMakeCommand::class,
+        ReinstallCommand::class
     ];
 
     /**

@@ -138,7 +138,7 @@ class SeedCommand extends Command
      */
     protected function renderException($output, \Throwable $e)
     {
-        if($e instanceof \Error){
+        if ($e instanceof \Error) {
             $e = new \Exception($e->getMessage());
         }
         $this->laravel[ExceptionHandler::class]->renderForConsole($output, $e);

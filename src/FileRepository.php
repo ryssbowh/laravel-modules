@@ -304,6 +304,28 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
+     * Get the core modules
+     * 
+     * @param boolean $onlyNames
+     * 
+     * @return array
+     */
+    public function getCoreModules($onlyNames = false): array
+    {
+        $modules = array_filter($this->getOrdered(), function ($module) {
+            return $module->get('core') === 1;
+        });
+
+        if ($onlyNames) {
+            return array_map(function ($module) {
+                return $module->getName();
+            }, $modules);
+        }
+
+        return $modules;
+    }
+
+    /**
      * Get a module path.
      *
      * @return string
