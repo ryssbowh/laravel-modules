@@ -5,8 +5,10 @@ namespace Nwidart\Modules\Providers;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Commands\CommandMakeCommand;
 use Nwidart\Modules\Commands\ControllerMakeCommand;
+use Nwidart\Modules\Commands\DisableAllCommand;
 use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
+use Nwidart\Modules\Commands\EnableAllCoreCommand;
 use Nwidart\Modules\Commands\EnableCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\ExceptionMakeCommand;
@@ -95,7 +97,9 @@ class ConsoleServiceProvider extends ServiceProvider
         ResourceMakeCommand::class,
         TestMakeCommand::class,
         ExceptionMakeCommand::class,
-        ReinstallCommand::class
+        ReinstallCommand::class,
+        DisableAllCommand::class,
+        EnableAllCoreCommand::class
     ];
 
     /**

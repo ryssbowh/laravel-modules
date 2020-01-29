@@ -26,11 +26,6 @@ class ReinstallCommand extends Command
     protected $description = 'Drop database schema and re-install all the core modules.';
 
     /**
-     * @var \Nwidart\Modules\Contracts\RepositoryInterface
-     */
-    protected $module;
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -42,15 +37,13 @@ class ReinstallCommand extends Command
             exit;
         }
 
-        $this->call('cache:clear');
-
-        $this->module = $this->laravel['modules'];
-
         $this->dropAndCreateSchema();
 
         foreach (\Module::getCoreModules() as $module) {
             $this->migrate($module);
         }
+
+        $this->info('Core modules reinstalled.');
     }
 
     /**
